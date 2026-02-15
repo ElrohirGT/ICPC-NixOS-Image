@@ -28,5 +28,22 @@
         ];
       };
     });
+
+    nixosConfigurations = let
+      system = "x86_64-linux";
+    in {
+      simple = nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./hosts/simple/configuration.nix
+        ];
+      };
+      gnome = nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./hosts/gnome/configuration.nix
+        ];
+      };
+    };
   };
 }
