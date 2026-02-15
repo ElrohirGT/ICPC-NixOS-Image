@@ -19,13 +19,13 @@ tasks:
       - QEMU_KERNEL_PARAMS=console=ttyS0 ./result/bin/run-nixos-vm
   build-iso-image:
     label: build-iso-image-{{.HOST_NAME}}
-    vars:
-      HOST_NAME: '{{default "default" .HOST_NAME}}'
     desc: Build the NixOS ISO image.
+    requires:
+      vars:
+        - name: HOST_NAME
+          enum: ["simple", "gnome"]
     sources:
       - ./hosts/{{.HOST_NAME}}/**
-    # generates:
-    #   - ./result/bin/run-nixos-vm
     cmds:
       - nixos-rebuild build-image --show-trace --image-variant iso --flake .#{{.HOST_NAME}}
   build-vm-image:
