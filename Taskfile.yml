@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+tasks:
+  clean:
+    desc: Clean the generated files
+    cmds:
+      - cmd: |-
+          set +e
+          rm -r ./result/
+          rm ./result/
+          rm ./nixos.qcow2
+  run-image:
+    desc: Run the generated NixOS image inside QEMU.
+    deps:
+      - task: build-vm-image
+        vars:
+          HOST_NAME: "default"
+    cmds:
+      - QEMU_KERNEL_PARAMS=console=ttyS0 ./result/bin/run-nixos-vm
+  build-vm-image:
+    vars:
+      HOST_NAME: '{{default "default" .HOST_NAME}}'
+    desc: Build the NixOS image for VM.
+    sources:
+      - ./hosts/{{.HOST_NAME}}/**
+    generates:
+      - ./result/bin/run-nixos-vm
+    cmds:
+      - nix-build '<nixpkgs/nixos>' -A vm -I nixpkgs=channel:nixos-25.11 -I nixos-config=./hosts/{{.HOST_NAME}}/configuration.nix
