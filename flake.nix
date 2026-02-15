@@ -21,6 +21,10 @@
       default = pkgs.mkShell {
         packages = [
           pkgs.go-task
+
+          # Yaml formatting and linting
+          pkgs.yamllint
+          pkgs.yamlfmt
         ];
       };
     });
