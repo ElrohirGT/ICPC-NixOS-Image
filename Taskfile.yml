@@ -26,8 +26,11 @@ tasks:
           enum: ["simple", "gnome"]
     sources:
       - ./hosts/{{.HOST_NAME}}/**
+    generates:
+      - ./result/iso/*.iso
     cmds:
-      - nixos-rebuild build-image --show-trace --image-variant iso --flake .#{{.HOST_NAME}}
+      # - nixos-rebuild build-image --show-trace --image-variant iso --flake .#{{.HOST_NAME}}
+      - nix build .#nixosConfigurations.{{.HOST_NAME}}.config.system.build.images.iso
   build-vm-image:
     label: build-vm-image-{{.HOST_NAME}}
     vars:
