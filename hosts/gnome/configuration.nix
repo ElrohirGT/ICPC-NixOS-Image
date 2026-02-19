@@ -1,8 +1,14 @@
 {
   config,
   pkgs,
+  modulesPath,
   ...
 }: {
+  imports = [
+    (modulesPath + "/installer/cd-dvd/installation-cd-graphical-gnome.nix")
+    (modulesPath + "/installer/cd-dvd/channel.nix")
+  ];
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -32,6 +38,10 @@
     LC_TIME = "es_GT.UTF-8";
   };
 
+  hardware.graphics.enable = true;
+  security.sudo.enable = false;
+  xdg.portal.enable = true;
+
   users.users.contestant = {
     isNormalUser = true;
     extraGroups = ["wheel" "networkmanager"];
@@ -47,11 +57,21 @@
     trusted-users = ["root"];
   };
 
-  hardware.graphics.enable = true;
-  security.sudo.enable = false;
-  xdg.portal.enable = true;
+  # Installed Programs
+  users.users.contestant.packages = [
+    pkgs.google-chrome
+    pkgs.vscode-fhs
 
+    # Languages
+    pkgs.gcc
+    pkgs.kotlin
+    pkgs.python3
+  ];
   programs.java.enable = true;
 
   system.stateVersion = "25.11";
+
+  # Debug builds of the image
+  # Comment out for more compression
+  isoImage.squashfsCompression = "lz4";
 }

@@ -30,7 +30,7 @@ tasks:
       - ./result/iso/*.iso
     cmds:
       # - nixos-rebuild build-image --show-trace --image-variant iso --flake .#{{.HOST_NAME}}
-      - nix build .#nixosConfigurations.{{.HOST_NAME}}.config.system.build.images.iso-installer
+      - nix build .#nixosConfigurations.{{.HOST_NAME}}.config.system.build.isoImage
   build-vm-image:
     label: build-vm-image-{{.HOST_NAME}}
     vars:
