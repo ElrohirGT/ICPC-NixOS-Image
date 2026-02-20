@@ -9,12 +9,25 @@ tasks:
           rm -r ./result/
           rm ./result/
           rm ./nixos.qcow2
-  run-image:
+  run-iso-image:
+    desc: Run the ISO inside a QEMU instance.
+    deps:
+      - task: build-iso-image
+      - task: prepare-vm-disk
+    cmds:
+      - QEMU_KERNEL_PARAMS=console=ttyS0 qemu-system-x86_64 -m 4096 -smp 2 -boot d -cdrom image.iso -drive file={{.HOST_NAME}}.qcow2,format=qcow2 -netdev user,id=net0,hostfwd=tcp::2222-:22 -device e1000,netdev=net0 -display default,show-cursor=on
+  prepare-vm-disk:
+    desc: Creates a VM-disk to run a VM
+    requires:
+      vars:
+        - name: HOST_NAME
+          enum: ["simple", "gnome"]
+    cmds:
+      - qemu-img create -f qcow2 {{.HOST_NAME}}.qcow2 40G
+  run-vm-image:
     desc: Run the generated NixOS image inside QEMU.
     deps:
       - task: build-vm-image
-        vars:
-          HOST_NAME: "gnome"
     cmds:
       - QEMU_KERNEL_PARAMS=console=ttyS0 ./result/bin/run-nixos-vm
   build-iso-image:
@@ -26,11 +39,14 @@ tasks:
           enum: ["simple", "gnome"]
     sources:
       - ./hosts/{{.HOST_NAME}}/**
+      - ./Taskfile.yml
     generates:
       - ./result/iso/*.iso
     cmds:
       # - nixos-rebuild build-image --show-trace --image-variant iso --flake .#{{.HOST_NAME}}
       - nix build .#nixosConfigurations.{{.HOST_NAME}}.config.system.build.isoImage
+      - rm image.iso || echo "Failed to remove, no image found!"
+      - cp ./result/iso/nixos-gnome-25.11.20260214.3aadb7c-x86_64-linux.iso image.iso
   build-vm-image:
     label: build-vm-image-{{.HOST_NAME}}
     vars:
