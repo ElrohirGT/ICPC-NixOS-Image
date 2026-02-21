@@ -25,6 +25,8 @@
           # Yaml formatting and linting
           pkgs.yamllint
           pkgs.yamlfmt
+
+          pkgs.writedisk
         ];
       };
     });

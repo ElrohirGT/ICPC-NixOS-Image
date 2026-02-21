@@ -9,6 +9,12 @@ tasks:
           rm -r ./result/
           rm ./result/
           rm ./nixos.qcow2
+  flash-iso-image:
+    desc: Flash the ISO image.
+    deps:
+      - task: build-iso-image
+    cmds:
+      - writedisk image.iso
   run-iso-image:
     desc: Run the ISO inside a QEMU instance.
     deps:
